@@ -1,4 +1,4 @@
-#include "app_2d.hpp"
+#include "apps/app.hpp"
 
 #include "framework/systems/physics/gravity_system.hpp"
 #include "framework/systems/physics/vec2_field_system.hpp"

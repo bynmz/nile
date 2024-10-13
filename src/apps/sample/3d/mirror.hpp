@@ -1,4 +1,4 @@
-#include "app_3d.hpp"
+#include "apps/app.hpp"
 
 #include "framework/systems/lights/point_light_system.hpp"
 #include "framework/systems/rendering/mirror/mirror_system.hpp"
