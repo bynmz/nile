@@ -1,4 +1,4 @@
-#include "apps/sample/3d/mirror.hpp"
+#include "apps/test/3d/terrain.hpp"
 
 // std
 #include <cstdlib>
@@ -6,11 +6,11 @@
 #include <stdexcept>
 
 int main(int argc, char *argv[]) {
-  nile::Mirror game;
+  nile::Terrain game;
   nile::App3D &app = game;
   
   try {
-    game.start();
+    app.start();
 
   return 0;
 

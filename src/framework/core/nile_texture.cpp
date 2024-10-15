@@ -1,5 +1,7 @@
 #include "nile_texture.hpp"
 
+#include <iostream>
+
 // libs
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>

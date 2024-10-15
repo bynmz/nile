@@ -26,6 +26,7 @@ layout (set = 1, binding = 1) uniform sampler2D diffuseMap;
 layout(push_constant) uniform Push {
   mat4 modelMatrix;
   mat4 normalMatrix;
+  float brightnessFactor;
 } push;
 
 void main() {
@@ -57,5 +58,5 @@ void main() {
 
   //vec3 color = fragColor;
   vec3 color = texture(diffuseMap, fragUv).xyz;
-  outColor = vec4(diffuseLight * color + specularLight * fragColor, 1.0);
+  outColor = vec4(diffuseLight * color + specularLight * fragColor, 1.0) * push.brightnessFactor;
 }
