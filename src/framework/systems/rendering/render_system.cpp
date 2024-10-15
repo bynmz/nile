@@ -5,6 +5,7 @@ namespace nile{
 struct SimplePushConstantData {
   glm::mat4 modelMatrix{1.f};
   glm::mat4 normalMatrix{1.f};
+  float brightnessFactor;
 };
 
 SimpleRenderSystem::SimpleRenderSystem(
@@ -406,6 +407,7 @@ void RenderSystem3D::renderGameObjects(FrameInfo& frameInfo) {
     SimplePushConstantData push{};
     push.modelMatrix = obj.transform.mat4();
     push.normalMatrix = obj.transform.normalMatrix();
+    push.brightnessFactor = 10.5f;
 
     vkCmdPushConstants(
         frameInfo.commandBuffer,
