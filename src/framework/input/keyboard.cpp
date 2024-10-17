@@ -52,7 +52,7 @@ void KeyboardMovementController::moveInPlaneXY(
     if (glfwGetKey(window, keys.moveBackward) == GLFW_PRESS) moveDir -= upDir;
 
     if (glm::dot(moveDir, moveDir) > std::numeric_limits<float>::epsilon()) {
-      gameObject.transform2d.translation += moveSpeed * dt * glm::normalize(moveDir);
+      gameObject.transform2d.translation += glm::vec3(moveSpeed * dt * glm::normalize(moveDir), 0.f);
     }
   
   }
