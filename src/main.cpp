@@ -1,4 +1,4 @@
-#include "apps/test/3d/terrain.hpp"
+#include "apps/game/2d/breakout/breakout.hpp"
 
 // std
 #include <cstdlib>
@@ -6,8 +6,8 @@
 #include <stdexcept>
 
 int main(int argc, char *argv[]) {
-  nile::Terrain game;
-  nile::App3D &app = game;
+  nile::Breakout game;
+  nile::App2D &app = game;
   
   try {
     app.start();

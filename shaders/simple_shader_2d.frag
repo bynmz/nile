@@ -8,7 +8,7 @@ layout (set = 1, binding = 1) uniform sampler2D diffuseMap;
 
 layout(push_constant) uniform Push {
   mat2 transform;
-  vec2 offset;
+  vec3 offset;
   vec3 color;
 } push;
 

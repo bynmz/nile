@@ -28,7 +28,7 @@ struct TransformComponent {
 };
 
 struct TransformComponent2d {
-  glm::vec2 translation{};
+  glm::vec3 translation{};
   glm::vec2 scale{1.f, 1.f};
   float rotation{};
 
@@ -147,7 +147,7 @@ class NileGameObjectManager {
    NileGameObject &makePointLight(
       float intensity = 10.f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.f));
 
-   NileGameObject &makeBall(float radius = .025f, glm::vec2 velocity = {.4f, -.4f});
+   NileGameObject &makeBall(float radius = .025f, glm::vec2 velocity = {.04f, -.04f});
 
    NileGameObject &makeWater(float rippleIntensity = 1.f);
 
