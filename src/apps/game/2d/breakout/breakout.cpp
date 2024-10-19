@@ -160,25 +160,54 @@ std::unique_ptr<NileModel> Breakout::createCircleSprite(NileDevice& device, unsi
 
 std::unique_ptr<NileModel> Breakout::createRectangleSprite(NileDevice& device, float width, float height)
 {
-    // Define the vertices of the rectangle
-    std::vector<NileModel::Vertex> vertices{
-        {{-width / 2.0f, -height / 2.0f, 0.0f}},   // Bottom left
-        {{width / 2.0f, -height / 2.0f, 0.0f}},   // Bottom right
-        {{width / 2.0f, height / 2.0f, 0.0f}},   // Top right
-        {{-width / 2.0f, height / 2.0f, 0.0f}},   // Top left
+
+    // Number of segments for rounded corners
+    const int numSegments = 5;
+    const float cornerRadius = 0.5f;
+    
+    std::vector<NileModel::Vertex> vertices;
+
+    // Function to add corner vertices
+    auto addCornerVertices = [&](float centerX, float centerY, float startAngle) {
+        for (int i = 0; i <= numSegments; ++i) {
+            float angle = startAngle + i * M_PI_2 / numSegments;
+            vertices.push_back({{centerX + cornerRadius * cos(angle), centerY + cornerRadius * sin(angle), 0.0f}});
+        }
     };
 
-    // Define the indices to form two triangles (forming a rectangle)
-    std::vector<uint32_t> indices{
-        0, 1, 2,    // First triangle (bottom-right-top)
-        0, 2, 3     // Second triangle (bottom-left-top)
-    };
+    // Add vertices for each corner
+    addCornerVertices(-width / 2.0f + cornerRadius, -height / 2.0f + cornerRadius, M_PI);
+    addCornerVertices(width / 2.0f - cornerRadius, -height / 2.0f + cornerRadius, -M_PI_2);
+    addCornerVertices(width / 2.0f - cornerRadius, height / 2.0f - cornerRadius, 0.0f);
+    addCornerVertices(-width / 2.0f + cornerRadius, height / 2.0f - cornerRadius, M_PI_2);
+
+    // Add center vertices for straight edges
+    vertices.push_back({{-width / 2.0f + cornerRadius, -height / 2.0f, 0.0f}});
+    vertices.push_back({{width / 2.0f - cornerRadius, -height / 2.0f, 0.0f}});
+    vertices.push_back({{width / 2.0f, -height / 2.0f + cornerRadius, 0.0f}});
+    vertices.push_back({{width / 2.0f, height / 2.0f - cornerRadius, 0.0f}});
+    vertices.push_back({{width / 2.0f - cornerRadius, height / 2.0f, 0.0f}});
+    vertices.push_back({{-width / 2.0f + cornerRadius, height / 2.0f, 0.0f}});
+    vertices.push_back({{-width / 2.0f, height / 2.0f - cornerRadius, 0.0f}});
+    vertices.push_back({{-width / 2.0f, -height / 2.0f + cornerRadius, 0.0f}});
+
+    // Simplified indices, you need to carefully construct these
+    std::vector<uint32_t> indices;
+    for (uint32_t i = 0; i < vertices.size() - 2; ++i) {
+        indices.push_back(0);
+        indices.push_back(i + 1);
+        indices.push_back(i + 2);
+    }
+
+    // Ensure vertices and indices are not empty
+    if (vertices.empty() || indices.empty()) {
+        throw std::runtime_error("Vertex or index buffer is empty!");
+    }
 
     // Create the NileModel using the provided vertices and indices
     NileModel::Builder spriteBuilder{};
     spriteBuilder.vertices = vertices;
     spriteBuilder.indices = indices;
-
     return std::make_unique<NileModel>(device, spriteBuilder);
 }
 
