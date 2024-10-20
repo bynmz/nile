@@ -46,8 +46,9 @@ private:
 
    typedef std::tuple<bool, Direction, glm::vec2> Collision;
 
-   std::unique_ptr<NileModel>  createCircleSprite(NileDevice& device, unsigned int numSides);
-   std::unique_ptr<NileModel>  createRectangleSprite(NileDevice& device, float width, float height);
+   std::unique_ptr<NileModel> createCircleSprite(NileDevice& device, unsigned int numSides);
+   std::unique_ptr<NileModel> createRectangleSprite(NileDevice& device, float width, float height);
+   std::unique_ptr<NileModel> createOctopusSprite(NileDevice& device);
     
    void loadGameLevels();
 
@@ -55,7 +56,7 @@ private:
    void updateBallPos(float dt, unsigned int window_width);
    void action(GLFWwindow* window, NileGameObject &gameObject);
    Collision checkCollision(NileGameObject& one, NileGameObject &two);
-   void doCollisions(FrameInfo frameInfo);
+   void DoCollisions(FrameInfo frameInfo);
    
    Direction VectorDirection(glm::vec2 target);
 
