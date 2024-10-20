@@ -63,7 +63,7 @@ void Breakout::loop()
             updateBallPos(0.05f, WIDTH / 800.0f);
 
             // Check for collisions
-            doCollisions(frameInfo);
+            DoCollisions(frameInfo);
 
             nileRenderer.endSwapChainRenderPass(commandBuffer);
             nileRenderer.endFrame();
@@ -111,17 +111,20 @@ void Breakout::loadGameLevels()
 void Breakout::loadGameObjects()
 {    
     
+    std::shared_ptr<NileTexture> smileyFace = 
+        NileTexture::createTextureFromFile(nileDevice, "../resources/breakout/images/awesomeFace.png");
     ballobj = &gameObjectManager.makeBall();
     ballobj->model = createCircleSprite(nileDevice, 22);
     ballobj->color = glm::vec3(1.0f);
     ballobj->transform2d.translation = {0.0f, .84f, 0.f};
+    ballobj->diffuseMap = smileyFace;
 
     
     std::shared_ptr<NileTexture> paddle = 
         NileTexture::createTextureFromFile(nileDevice, "../resources/breakout/images/paddle.png");
     player = &gameObjectManager.createGameObject();
     player->model = createRectangleSprite(nileDevice, 100.0f / 50, 20.0f / 10);
-    player->transform2d.scale ={.1f, .05f};
+    player->transform2d.scale ={.2f, .05f};
     player->transform2d.translation = {0.0f, .94f, 0.f};
     player->color = glm::vec3(1.0f);
     player->diffuseMap = paddle; 
@@ -155,6 +158,34 @@ std::unique_ptr<NileModel> Breakout::createCircleSprite(NileDevice& device, unsi
     spriteBuilder.vertices = vertices;
     spriteBuilder.indices = indices;
 
+    return std::make_unique<NileModel>(device, spriteBuilder);
+}
+
+std::unique_ptr<NileModel> Breakout::createOctopusSprite(NileDevice& device) {
+    std::vector<NileModel::Vertex> vertices{
+        {{0.0f, 0.2f, 0.0f}},  // Head center
+        {{-0.2f, 0.0f, 0.0f}}, // Head left
+        {{0.2f, 0.0f, 0.0f}},  // Head right
+        // Tentacles
+        {{-0.3f, -0.2f, 0.0f}},
+        {{-0.15f, -0.35f, 0.0f}},
+        {{0.0f, -0.5f, 0.0f}},
+        {{0.15f, -0.35f, 0.0f}},
+        {{0.3f, -0.2f, 0.0f}}
+    };
+
+    std::vector<uint32_t> indices{
+        0, 1, 2, // Head triangle
+        1, 3, 4, // Left tentacle
+        1, 4, 5, // Inner left tentacle
+        2, 6, 7, // Right tentacle
+        2, 5, 6  // Inner right tentacle
+    };
+
+    // Create the NileModel using the provided vertices and indices
+    NileModel::Builder spriteBuilder{};
+    spriteBuilder.vertices = vertices;
+    spriteBuilder.indices = indices;
     return std::make_unique<NileModel>(device, spriteBuilder);
 }
 
@@ -237,8 +268,8 @@ void Breakout::updateBallPos(float dt, unsigned int window_width)
         else if (ballobj->transform2d.translation.y + ballobj->transform2d.scale.y >= window_width)
         {
             // Reset
-            ballobj->rigidBody2d.velocity.y = ballobj->rigidBody2d.velocity.y * -1;
-            ballobj->transform2d.translation.y = .7f;
+            // ballobj->rigidBody2d.velocity.y = ballobj->rigidBody2d.velocity.y * -1;
+            // ballobj->transform2d.translation.y = .7f;
             //ballobj->ball->stuck = !ballobj->ball->stuck;
         }
     } else 
@@ -290,7 +321,7 @@ Breakout::Collision Breakout::checkCollision(NileGameObject &one, NileGameObject
         return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
 }
 
-void Breakout::doCollisions(FrameInfo frameInfo)
+void Breakout::DoCollisions(FrameInfo frameInfo)
 {
     for (NileGameObject::id_t id : Levels[this->Level].bricks)
     {
@@ -334,23 +365,21 @@ void Breakout::doCollisions(FrameInfo frameInfo)
                 }
             }
         }
-        Collision result = checkCollision(*ballobj, *player);
-        if (!ballobj->ball->stuck && std::get<0>(result))
-        {
-            // // exit(0);
-            // // check where it hit the board, and change velocity based on where it hit the board
-            // float centerBoard = player->transform2d.translation.x + player->transform2d.scale.x / 2.0f;
-            // float distance = (ballobj->transform2d.translation.x + ballobj->ball->radius) - centerBoard;
-            // float percentage = distance / (player->transform2d.scale.x / 2.0f);
-            // // then move accordingly
-            // float strength = 2.0f;
-            // glm::vec2 oldVelocity = ballobj->rigidBody2d.velocity;
-            // ballobj->rigidBody2d.velocity.x = oldVelocity.x * percentage * strength;
-            // // ballobj->rigidBody2d.velocity.y = -ballobj->rigidBody2d.velocity.y;
-            // ballobj->rigidBody2d.velocity.y = -1.0f * abs(ballobj->rigidBody2d.velocity.y);
-            // ballobj->rigidBody2d.velocity = glm::normalize(ballobj->rigidBody2d.velocity) * glm::length(oldVelocity);
-        }
     };
+    Collision result = checkCollision(*ballobj, *player);
+    if (!ballobj->ball->stuck && std::get<0>(result))
+    {
+        // check where it hit the board, and change velocity based on where it hit the board
+        float centerBoard = player->transform2d.translation.x + player->transform2d.scale.x / 2.0f;
+        float distance = (ballobj->transform2d.translation.x + ballobj->ball->radius) - centerBoard;
+        float percentage = distance / (player->transform2d.scale.x / 2.0f);
+        // then move accordingly
+        float strength = 2.f;
+        glm::vec2 oldVelocity = ballobj->rigidBody2d.velocity;
+        ballobj->rigidBody2d.velocity.x = .05f * percentage * strength; // .04f is the initial ball velocity
+        ballobj->rigidBody2d.velocity.y = -ballobj->rigidBody2d.velocity.y;
+        ballobj->rigidBody2d.velocity = glm::normalize(ballobj->rigidBody2d.velocity) * glm::length(oldVelocity);
+    }
 }
 
 Breakout::Direction Breakout::VectorDirection(glm::vec2 target)
