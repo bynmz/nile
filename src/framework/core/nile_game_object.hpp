@@ -42,6 +42,8 @@ struct TransformComponent2d {
   }
 };
 
+
+
 struct BallComponent
 {
     bool      stuck = true;
@@ -120,6 +122,25 @@ class NileGameObject {
   const NileGameObjectManager &gameObjectManager;
 
   friend class NileGameObjectManager;
+};
+
+struct GameLevel
+{
+void load(
+    NileDevice& device, 
+    NileGameObjectManager& gom, 
+    const std::string& file, 
+    unsigned int levelWidth, 
+    unsigned int levelHeight,
+    bool isCurrentLevel = false);
+bool isCompleted();
+
+void init(
+    NileDevice& device, 
+    NileGameObjectManager& gom, 
+    const std::vector<std::vector<unsigned int>>& tileData,
+    unsigned int levelWidth, unsigned int levelHeight, bool isCurrentLevel);
+    std::vector<NileGameObject::id_t> bricks;
 };
 
 class NileGameObjectManager {

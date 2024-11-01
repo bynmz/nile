@@ -1,4 +1,8 @@
+//#pragma once
+
 #include "apps/app.hpp"
+
+#include "framework/systems/physics/collision/collision_system.hpp"
 
 #include <fstream>
 #include <string>
@@ -7,25 +11,6 @@
 
 namespace nile
 {
-
-struct GameLevel
-{
-void load(
-    NileDevice& device, 
-    NileGameObjectManager& gom, 
-    const std::string& file, 
-    unsigned int levelWidth, 
-    unsigned int levelHeight,
-    bool isCurrentLevel = false);
-bool isCompleted();
-
-void init(
-    NileDevice& device, 
-    NileGameObjectManager& gom, 
-    const std::vector<std::vector<unsigned int>>& tileData,
-    unsigned int levelWidth, unsigned int levelHeight, bool isCurrentLevel);
-    std::vector<NileGameObject::id_t> bricks;
-};
 
 class Breakout : public App2D
 {
@@ -48,18 +33,13 @@ private:
 
    std::unique_ptr<NileModel> createCircleSprite(NileDevice& device, unsigned int numSides);
    std::unique_ptr<NileModel> createRectangleSprite(NileDevice& device, float width, float height);
-   std::unique_ptr<NileModel> createOctopusSprite(NileDevice& device);
     
    void loadGameLevels();
 
    void loadGameObjects() override;
    void updateBallPos(float dt, unsigned int window_width);
    void action(GLFWwindow* window, NileGameObject &gameObject);
-   Collision checkCollision(NileGameObject& one, NileGameObject &two);
-   void DoCollisions(FrameInfo frameInfo);
    
-   Direction VectorDirection(glm::vec2 target);
-
    KeyboardMovementController ballController{};
 
    NileGameObject* player;
