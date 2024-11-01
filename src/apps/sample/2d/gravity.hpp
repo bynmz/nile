@@ -20,7 +20,7 @@ public:
     Gravity();
     ~Gravity() override;
 
-    void loop() override;
+    void loop() override; 
     void start() override;
 };
 
