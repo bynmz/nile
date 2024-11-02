@@ -6,7 +6,7 @@
   - [Building for Unix](#UnixBuild)
   - [Building for MacOS](#MacOSBuild)
   - [Building for Windows](#WindowsBuild)
-- [Official Khronos Vulkan Samples](#Khronossamples)
+- [Community](#Community)
 - [Credits and Attributions](#CreditsAttributions)
 
 ## <a name="Building"></a> Building
@@ -80,9 +80,14 @@
 - Also set MINGW_PATH variable in the project's .env.cmake
 - In windows powershell
 
+
 ```
  cd NileEngine
  ./mingwBuild.bat
 ```
 
 - This will build the project to build/NileEngine.exe, double click in file explorer to open and run
+
+## <a name="community"></a> Community
+
+- [Discord](https://discord.gg/uFNerznC)
