@@ -22,14 +22,6 @@ public:
     void start() override;
 
 private:
-   enum Direction {
-        UP,
-        RIGHT,
-        DOWN,
-        LEFT
-   };
-
-   typedef std::tuple<bool, Direction, glm::vec2> Collision;
 
    std::unique_ptr<NileModel> createCircleSprite(NileDevice& device, unsigned int numSides);
    std::unique_ptr<NileModel> createRectangleSprite(NileDevice& device, float width, float height);
