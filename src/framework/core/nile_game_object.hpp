@@ -42,7 +42,13 @@ struct TransformComponent2d {
   }
 };
 
-
+struct ParticleComponent 
+{
+  glm::vec2 Position{0.0f};
+  glm::vec2 Velocity;
+  glm::vec4 Color{1.0f};
+  float     Life = 0.0f;
+};
 
 struct BallComponent
 {
@@ -50,7 +56,6 @@ struct BallComponent
     float     radius;
     glm::vec2 Move(float dt, unsigned int window_width);
     void      reset(glm::vec2 position, glm::vec2 velocity);
-
 };
 
 struct WaterComponent
@@ -94,6 +99,7 @@ class NileGameObject {
   glm::vec3 color{};
   bool isSolid = false;
   bool isMirror = false;
+  bool isParticle = false;
   bool Destroyed = false;
   bool isVectorField = false;
   
@@ -112,6 +118,7 @@ class NileGameObject {
   std::unique_ptr<PointLightComponent> pointLight = nullptr;
   std::unique_ptr<WaterComponent> water = nullptr;
   std::unique_ptr<BallComponent> ball = nullptr;
+  std::unique_ptr<ParticleComponent> particle = nullptr;
   
  private:
   NileGameObject(id_t objId, const NileGameObjectManager &manager);
@@ -171,6 +178,9 @@ class NileGameObjectManager {
    NileGameObject &makeBall(float radius = .025f, glm::vec2 velocity = {.05f, -.05f});
 
    NileGameObject &makeWater(float rippleIntensity = 1.f);
+
+   NileGameObject &makeParticle(
+    float Life = 0.0f, glm::vec2 Position = glm::vec2(0.0f), glm::vec2 Velocity = glm::vec2(0.0f), glm::vec4 Color = glm::vec4(1.0f));
 
    VkDescriptorBufferInfo getBufferInfoForGameObject(
         int frameIndex, NileGameObject::id_t gameObjectId) const {

@@ -39,6 +39,8 @@ private:
 private:
    std::vector<GameLevel> Levels;
    unsigned int           Level;
+   unsigned int nr_particles = 500;
+   // std::vector<Particle> particles;
 };
 
 } // namespace nile

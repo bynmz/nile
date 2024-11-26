@@ -88,6 +88,20 @@ NileGameObject& NileGameObjectManager::makeWater(float intensity) {
     return gameObj;
 }
 
+NileGameObject& NileGameObjectManager::makeParticle(
+    float Life, glm::vec2 Position, glm::vec2 Velocity, glm::vec4 Color
+) {
+    auto& gameObj = createGameObject();
+    gameObj.particle = std::make_unique<ParticleComponent>();
+    gameObj.color = Color;
+    gameObj.transform2d.translation.x = Position.x;
+    gameObj.transform2d.translation.y = Position.y;
+    gameObj.isParticle = true;
+    gameObj.particle->Life = Life;
+    gameObj.rigidBody2d.velocity = Velocity;
+    return gameObj;
+}
+
 NileGameObjectManager::NileGameObjectManager(NileDevice& device) {
     // including nonCoherentAtomSize allows us to flush a specific index at once
     int alignment = std::lcm(
