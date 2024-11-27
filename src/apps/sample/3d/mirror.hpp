@@ -1,7 +1,7 @@
 #include "apps/app.hpp"
 
 #include "framework/systems/lights/point_light_system.hpp"
-#include "framework/systems/rendering/mirror/mirror_system.hpp"
+#include "framework/systems/mirror/mirror_system.hpp"
 
 namespace nile{
 class Mirror : public App3D {

@@ -1,6 +1,8 @@
 #include "breakout.hpp"
 #include <unistd.h>
 
+#include "framework/systems/particles/particle_system.hpp"
+
 namespace nile
 {
     
@@ -20,6 +22,13 @@ void Breakout::loop()
         nileDevice,
         nileRenderer.getSwapChainRenderPass(),
         globalSetLayout->getDescriptorSetLayout()
+    };
+    ParticleGenerator particleGenerator{
+        nileDevice,
+        gameObjectManager,
+        nileRenderer.getSwapChainRenderPass(),
+        globalSetLayout->getDescriptorSetLayout(), 
+        nr_particles
     };
 
     SimpleCollisionSystem simpleCollision;
@@ -48,11 +57,15 @@ void Breakout::loop()
                 *framePools[frameIndex],
                 gameObjectManager.gameObjects};
 
+            particleGenerator.update(0.05f, *ballobj, 2, glm::vec2(ballobj->ball->radius / 2.0f));
             //gameObjectManager.updateBuffer(frameIndex);
             // render
             nileRenderer.beginSwapChainRenderPass(commandBuffer);
 
             renderSystem2D.renderGameObjects(frameInfo);
+
+            particleGenerator.render(frameInfo);
+
             playerController.moveInPlaneXY(
                 nileWindow.getGLFWwindow(), 
                 frameInfo.frameTime, 
@@ -65,9 +78,9 @@ void Breakout::loop()
             );
             updateBallPos(0.05f, WIDTH / 800.0f);
 
+
             // Check for collisions
             simpleCollision.doCollisions(frameInfo, *ballobj, *player, this->Levels, Level);
-
             nileRenderer.endSwapChainRenderPass(commandBuffer);
             nileRenderer.endFrame();
         }
@@ -131,7 +144,6 @@ void Breakout::loadGameObjects()
     player->transform2d.translation = {0.0f, .94f, 0.f};
     player->color = glm::vec3(1.0f);
     player->diffuseMap = paddle; 
-    
     
     loadGameLevels();
 }
