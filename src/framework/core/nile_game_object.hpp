@@ -175,7 +175,7 @@ class NileGameObjectManager {
    NileGameObject &makePointLight(
       float intensity = 10.f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.f));
 
-   NileGameObject &makeBall(float radius = .025f, glm::vec2 velocity = {.05f, -.05f});
+   NileGameObject &makeBall(float radius = .025f, glm::vec2 velocity = {.09f, -.09f});
 
    NileGameObject &makeWater(float rippleIntensity = 1.f);
 

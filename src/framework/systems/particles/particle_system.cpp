@@ -4,7 +4,7 @@ namespace nile {
 
     struct ParticlePushConstants {
         glm::vec2 position{};
-        glm::vec4 color{};
+        alignas(16) glm::vec4 color{};
         float radius;
     };
 
@@ -52,7 +52,9 @@ namespace nile {
                 .addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
                 .build();
 
-        std::vector<VkDescriptorSetLayout> descriptorSetLayouts{globalSetLayout};
+        std::vector<VkDescriptorSetLayout> descriptorSetLayouts{
+            globalSetLayout, 
+            renderSystemLayout->getDescriptorSetLayout()};
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -156,50 +158,65 @@ namespace nile {
             0,
             nullptr);
 
+        // Create a map to cache descriptor sets for each game object
+        std::unordered_map<NileGameObject*, VkDescriptorSet> cachedDesriptorSets;
+
         for (auto& kv : frameInfo.gameObjects) {
             auto& obj = kv.second;
             if (obj.model == nullptr || !obj.isParticle || obj.getIsHidden()) continue;
-            // for (Particle particle : this->particles)
-            // {
-
-                auto bufferInfo = obj.getBufferInfo(frameInfo.frameIndex);
-                auto diffuseMapInfo =  obj.diffuseMap->getImageInfo();
-                VkDescriptorSet gameObjectDescriptorSet;
-                NileDescriptorWriter(*renderSystemLayout, frameInfo.frameDescriptorPool)
-                    .writeBuffer(0, &bufferInfo)
-                    .writeImage(1, &diffuseMapInfo)
-                    .build(gameObjectDescriptorSet);
-      
-                // Bind the newly created descriptor set
-                vkCmdBindDescriptorSets(
-                    frameInfo.commandBuffer,
-                    VK_PIPELINE_BIND_POINT_GRAPHICS,
-                    pipelineLayout,
-                    1,
-                    1,  // set count
-                    &gameObjectDescriptorSet,
-                    0,
-                    nullptr);
-
-                std::cout<<0<<std::endl;
-                ParticlePushConstants push{};
-                push.position = glm::vec2(obj.transform2d.translation.x, obj.transform2d.translation.y);
-                push.color = glm::vec4(obj.color, 0);
-
+            
                 if (obj.particle->Life > 0.0f)
                 {
-                    vkCmdPushConstants(
-                        frameInfo.commandBuffer,
-                        pipelineLayout,
-                        VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-                        0,
-                        sizeof(ParticlePushConstants),
-                        &push);
-                    obj.model->bind(frameInfo.commandBuffer);
-                    obj.model->draw(frameInfo.commandBuffer);
-                }
-           }         
-        }
+                    // Check if the descriptor set is already cached
+                    auto it = cachedDesriptorSets.find(&obj);
+                    if (it != cachedDesriptorSets.end()) {
+                        // If cached, bind the cached descriptor set
+                        vkCmdBindDescriptorSets(
+                            frameInfo.commandBuffer,
+                            VK_PIPELINE_BIND_POINT_GRAPHICS,
+                            pipelineLayout,
+                            1,
+                            1,  // set count
+                            &it->second,
+                            0,
+                            nullptr);
+                    } else {
+                        auto bufferInfo = obj.getBufferInfo(frameInfo.frameIndex);
+                        auto diffuseMapInfo =  obj.diffuseMap->getImageInfo();
+                        VkDescriptorSet gameObjectDescriptorSet;
+                        NileDescriptorWriter(*renderSystemLayout, frameInfo.frameDescriptorPool)
+                            .writeBuffer(0, &bufferInfo)
+                            .writeImage(1, &diffuseMapInfo)
+                            .build(gameObjectDescriptorSet);
+                
+                        cachedDesriptorSets[&obj] = gameObjectDescriptorSet;
 
+                        // Bind the newly created descriptor set
+                        vkCmdBindDescriptorSets(
+                            frameInfo.commandBuffer,
+                            VK_PIPELINE_BIND_POINT_GRAPHICS,
+                            pipelineLayout,
+                            1,
+                            1,  // set count
+                            &gameObjectDescriptorSet,
+                            0,
+                            nullptr);
+                        }
+
+                        ParticlePushConstants push{};
+                        push.position = glm::vec2(obj.transform2d.translation.x, obj.transform2d.translation.y);
+                        push.color = glm::vec4(obj.color, 0);
+
+                            vkCmdPushConstants(
+                                frameInfo.commandBuffer,
+                                pipelineLayout,
+                                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                                0,
+                                sizeof(ParticlePushConstants),
+                                &push);
+                            obj.model->bind(frameInfo.commandBuffer);
+                            obj.model->draw(frameInfo.commandBuffer);
+                }
+        }         
     }
-//}
+}
