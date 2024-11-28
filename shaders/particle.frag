@@ -9,5 +9,6 @@ layout (set = 1, binding = 1) uniform sampler2D diffuseMap;
 
 void main()
 {
-    outColor = (texture(diffuseMap, texCoords) * particleColor);
+    vec4 diffuseColor = texture(diffuseMap, texCoords);
+    outColor = diffuseColor * particleColor;
 }

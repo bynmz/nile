@@ -10,12 +10,11 @@ layout(location = 1) out vec4 particleColor;
 
 layout(set = 0, binding = 0) uniform GlobalUbo {
   mat4 projection;
-  mat4 view;
-  mat4 invView;
 } ubo;
 
 layout(push_constant) uniform Push {
-  vec2 position;
+  vec2 transform; 
+  float padding[2];
   vec4 color;
 } push;
 
@@ -23,8 +22,8 @@ const float tiling = 1.0;
 
 void main()
 {
-    float scale = 10.0f;
-    texCoords = vec2(position.x/2.0 + 0.5, position.y/2.0 + 0.5) * tiling;
+    float scale = 1.0f;
+    texCoords = vec2(push.transform.x/2.0 + 0.5, push.transform.y/2.0 + 0.5) * tiling;
     particleColor = push.color;
-    gl_Position = ubo.projection * vec4((position.xy * scale) + push.position, 0.0, 1.0);
+    gl_Position = ubo.projection * vec4((push.transform.xy * scale) + push.transform, 0.0, 1.0);
 }
