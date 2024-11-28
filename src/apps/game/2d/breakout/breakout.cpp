@@ -57,7 +57,6 @@ void Breakout::loop()
                 *framePools[frameIndex],
                 gameObjectManager.gameObjects};
 
-            particleGenerator.update(0.05f, *ballobj, 2, glm::vec2(ballobj->ball->radius / 2.0f));
             //gameObjectManager.updateBuffer(frameIndex);
             // render
             nileRenderer.beginSwapChainRenderPass(commandBuffer);
@@ -77,6 +76,7 @@ void Breakout::loop()
                 gameObjectManager.gameObjects.at(ballobj->getId())
             );
             updateBallPos(0.05f, WIDTH / 800.0f);
+            particleGenerator.update(0.05f, *ballobj, 2, glm::vec2(ballobj->ball->radius / 2.0f));
 
 
             // Check for collisions

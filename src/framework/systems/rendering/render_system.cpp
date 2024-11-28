@@ -221,7 +221,7 @@ void RenderSystem2D::renderGameObjects(FrameInfo& frameInfo) {
 
   for (auto& kv : frameInfo.gameObjects) {
     auto& obj = kv.second;
-    if (obj.model == nullptr || obj.getIsHidden() || obj.Destroyed ) continue;
+    if (obj.model == nullptr || obj.isParticle || obj.getIsHidden() || obj.Destroyed ) continue;
     
     // Check if the descriptor set is already cached
     auto it = cachedDescriptorSets.find(&obj);
